@@ -17,21 +17,32 @@ class VINWiki {
   private $login = "";
   private $password = "";
   private $token = "";
-  private $endpoint_cache = Array();
   private $endpoints = Array(
-    "authenticate" => "https://rest.vinwiki.com/auth/authenticate"
+    "authenticate" => "https://rest.vinwiki.com/auth/authenticate",
+    "feed" => "https://rest.vinwiki.com/vehicle/feed/"
   );
+  private $endpoint_cache = Array();
 
   /**
-   * Setup A VINWiki Session
+   * Setup the VINWiki class
    *
-   * @param string $login
-   * @param string $password
-   * @throws
+   * @throws None
    * @author Alec M. <https://amattu.com>
    * @date 2021-03-31T11:03:28-040
    */
-  public function __construct(string $login, string $password)
+  public function __construct() {}
+
+  /**
+   * Setup VINWiki Session, Make new post
+   *
+   * @param string $login
+   * @param string $password
+   * @return boolean result
+   * @throws TypeError
+   * @author Alec M. <https://amattu.com>
+   * @date 2021-03-31T18:22:33-040
+   */
+  public function create_event(string $login, string $password, array $post) : bool
   {
     // Save Parameters, Setup Session
     $this->login = $login;
@@ -43,8 +54,34 @@ class VINWiki {
 
     // Check Result
     if ($result) {
+      // TBD: save token
+      // TBD: make post
       print_r($this->endpoint_cache["authenticate"]);
     }
+  }
+
+  /**
+   * Fetch Vehicle Feed By VIN
+   *
+   * @param string $vin
+   * @return array feed array
+   * @throws TypeError
+   * @author Alec M. <https://amattu.com>
+   * @date 2021-03-31T18:19:58-040
+   */
+  public function fetch_feed(string $vin) : array
+  {
+    // Checks
+    if (strlen($vin) != 17) {
+      return Array();
+    }
+
+    // Variables
+    $result = $this->http_get($this->endpoints["feed"] . $vin);
+    $feed = $result ? json_decode($result, true) : Array();
+
+    // Return
+    return $feed;
   }
 
   /**
@@ -85,6 +122,40 @@ class VINWiki {
     curl_close($handle);
     $this->endpoint_cache[$endpoint] = $result && !$error ? $result : "";
     return $result && !$error ? true : false;
+  }
+
+  /**
+   * Perform HTTP GET Request
+   *
+   * @param string $endpoint
+   * @return string HTTP result body | null
+   * @throws TypeError
+   * @author Alec M. <https://amattu.com>
+   * @date 2021-03-31T18:13:00-040
+   */
+  private function http_get(string $endpoint) : ?string
+  {
+    // cURL Initialization
+    $handle = curl_init();
+    $result = "";
+    $error = 0;
+
+    // Options
+    curl_setopt($handle, CURLOPT_URL, $endpoint);
+    curl_setopt($handle, CURLOPT_HTTPGET, 1);
+    curl_setopt($handle, CURLOPT_FAILONERROR, 1);
+    curl_setopt($handle, CURLOPT_FOLLOWLOCATION, 1);
+    curl_setopt($handle, CURLOPT_MAXREDIRS, 2);
+    curl_setopt($handle, CURLOPT_RETURNTRANSFER, 1);
+    curl_setopt($handle, CURLOPT_TIMEOUT, 10);
+
+    // Fetch Result
+    $result = curl_exec($handle);
+    $error = curl_errno($handle);
+
+    // Return
+    curl_close($handle);
+    return $result && !$error ? $result : "";
   }
 }
 ?>
