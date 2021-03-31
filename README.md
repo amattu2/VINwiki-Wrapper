@@ -1,5 +1,5 @@
 # Introduction
-N/A
+This is a PHP-7 VinWiki.com API endpoint wrapper. 
 
 # Usage
 N/A
@@ -8,7 +8,4 @@ N/A
 N/A
 
 # Requirements & Dependencies
-N/A
-
-# Previews
-![preview image](https://via.placeholder.com/350x240)
+PHP 7.0+
