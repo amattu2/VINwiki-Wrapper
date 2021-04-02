@@ -29,6 +29,7 @@ class VINWiki {
     "feed" => "https://rest.vinwiki.com/vehicle/feed/", /* GET */
     "pl82vin" => "https://rest.vinwiki.com/vehicle/plate", /* POST */
     "update_vehicle" => "https://rest.vinwiki.com/vehicle/vin/", /* POST, UPDATE */
+    "create_post" => "https://rest.vinwiki.com/vehicle/post/", /* POST, CREATE */
   );
   private $endpoint_cache = Array();
 
@@ -179,6 +180,63 @@ class VINWiki {
 
     // Return
     return true;
+  }
+
+
+  /**
+   * Create a new VINWiki post
+   *
+   * @param string $vin
+   * @param array Array(
+   *  ?"class_name",
+   *  ?"client",
+   *  ?"event_date",
+   *  ?"mileage",
+   *  "text"
+   * )
+   * @return array VINWiki response
+   * @throws TypeError
+   * @throws InvalidVINWikiSession
+   * @author Alec M. <https://amattu.com>
+   * @date 2021-04-02T11:46:39-040
+   */
+  public function create_post(string $vin, array $post) : ?array
+  {
+    // Check Parameters
+    if (!$this->token) {
+      throw new InvalidVINWikiSession("Invalid authorization token. Call setup_session first");
+    }
+    if (strlen($vin) != 17) {
+      return null;
+    }
+    if (!isset($post["text"]) || strlen($post["text"]) <= 0) {
+      return null;
+    }
+    if (!isset($post["class_name"])) {
+      $post["class_name"] = "generic";
+    }
+    if (!isset($post["client"])) {
+      $post["client"] = "web";
+    }
+    if (!isset($post["event_date"])) {
+      $post["event_date"] =  date("Y-m-d\TH:i:s.000\Z");
+    }
+
+    // Create Post
+    $endpoint = $this->endpoints["create_post"] . $vin;
+    $post_result = $this->http_post($endpoint, $post, $this->token);
+    $result = null;
+
+    // Check HTTP Result
+    if (!($result = json_decode($this->endpoint_cache[$endpoint], true))) {
+      return false;
+    }
+    if ($result["status"] !== "ok") {
+      return false;
+    }
+
+    // Return
+    return $result;
   }
 
   /**
