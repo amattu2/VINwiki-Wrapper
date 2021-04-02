@@ -25,9 +25,10 @@ class VINWiki {
   private $password = "";
   private $token = null;
   private $endpoints = Array(
-    "authenticate" => "https://rest.vinwiki.com/auth/authenticate",
-    "feed" => "https://rest.vinwiki.com/vehicle/feed/",
-    "pl82vin" => "https://rest.vinwiki.com/vehicle/plate"
+    "authenticate" => "https://rest.vinwiki.com/auth/authenticate", /* POST */
+    "feed" => "https://rest.vinwiki.com/vehicle/feed/", /* GET */
+    "pl82vin" => "https://rest.vinwiki.com/vehicle/plate", /* POST */
+    "update_vehicle" => "https://rest.vinwiki.com/vehicle/vin/", /* POST, UPDATE */
   );
   private $endpoint_cache = Array();
 
@@ -57,9 +58,10 @@ class VINWiki {
   public function setup_session(string $login, string $password) : bool
   {
     // Save Parameters, Setup Session
+    $endpoint = $this->endpoints["authenticate"];
     $this->login = $login;
     $this->password = $password;
-    $post_result = $this->http_post("authenticate", Array(
+    $post_result = $this->http_post($endpoint, Array(
       "login" => $login,
       "password" => $password
     ));
@@ -69,7 +71,7 @@ class VINWiki {
     if (!$post_result) {
       throw new UnknownHTTPException("http_post failed for an unknown reason");
     }
-    if (!($result = json_decode($this->endpoint_cache["authenticate"], true))) {
+    if (!($result = json_decode($this->endpoint_cache[$endpoint], true))) {
       throw new InvalidHTTPResponseException("VINWiki returned an unknown response");
     }
     if ($result["status"] !== "ok") {
@@ -109,7 +111,8 @@ class VINWiki {
     }
 
     // Fetch License Plate
-    $post_result = $this->http_post("pl82vin", Array(
+    $endpoint = $this->endpoints["pl82vin"];
+    $post_result = $this->http_post($endpoint, Array(
       "plate" => $license_plate,
       "state" => $state_abbr
     ), $this->token);
@@ -119,7 +122,7 @@ class VINWiki {
     if (!$post_result) {
       return null;
     }
-    if (!($result = json_decode($this->endpoint_cache["pl82vin"], true))) {
+    if (!($result = json_decode($this->endpoint_cache[$endpoint], true))) {
       return null;
     }
     if ($result["status"] !== "ok" || !isset($result["plate_lookup"])) {
@@ -157,7 +160,7 @@ class VINWiki {
   /**
    * Perform HTTP Post Request
    *
-   * @param string $endpoint
+   * @param string url
    * @param array $params
    * @return boolean result status
    * @throws TypeError
@@ -178,7 +181,7 @@ class VINWiki {
     if ($bearer) {
       curl_setopt($handle, CURLOPT_HTTPHEADER, ["Authorization: Bearer $bearer"]);
     }
-    curl_setopt($handle, CURLOPT_URL, $this->endpoints[$endpoint]);
+    curl_setopt($handle, CURLOPT_URL, $endpoint);
     curl_setopt($handle, CURLOPT_POST, count($fields));
     curl_setopt($handle, CURLOPT_POSTFIELDS, $field_string);
     curl_setopt($handle, CURLOPT_FAILONERROR, 1);
