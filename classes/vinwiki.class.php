@@ -14,7 +14,8 @@ class UnknownHTTPException extends \Exception {}
 class InvalidHTTPResponseException extends \Exception {}
 class InvalidVINWikiStatus extends \Exception {}
 class InvalidVINWikiToken extends \Exception {}
-  
+class InvalidVINWikiSession extends \Exception {}
+
 /**
  * A vinwiki.com API access class
  */
@@ -22,10 +23,11 @@ class VINWiki {
   // Variables
   private $login = "";
   private $password = "";
-  private $token = "";
+  private $token = null;
   private $endpoints = Array(
     "authenticate" => "https://rest.vinwiki.com/auth/authenticate",
-    "feed" => "https://rest.vinwiki.com/vehicle/feed/"
+    "feed" => "https://rest.vinwiki.com/vehicle/feed/",
+    "pl82vin" => "https://rest.vinwiki.com/vehicle/plate"
   );
   private $endpoint_cache = Array();
 
@@ -57,14 +59,14 @@ class VINWiki {
     // Save Parameters, Setup Session
     $this->login = $login;
     $this->password = $password;
-    $get_result = $this->http_post("authenticate", Array(
+    $post_result = $this->http_post("authenticate", Array(
       "login" => $login,
       "password" => $password
     ));
     $result = null;
 
     // Check HTTP Result
-    if (!$get_result) {
+    if (!$post_result) {
       throw new UnknownHTTPException("http_post failed for an unknown reason");
     }
     if (!($result = json_decode($this->endpoint_cache["authenticate"], true))) {
@@ -80,6 +82,52 @@ class VINWiki {
     // Return
     $this->token = $result["token"]["token"];
     return true;
+  }
+
+  /**
+   * Fetch a VIN from a license plate
+   *
+   * @see setup_session
+   * @param string license plate
+   * @param string U.S. state abbreviation
+   * @return array VINWiki decode response
+   * @throws TypeError
+   * @throws InvalidVINWikiSession
+   * @author Alec M. <https://amattu.com>
+   * @date 2021-04-02T11:01:55-040
+   */
+  public function pl82vin(string $license_plate, string $state_abbr) : ?array
+  {
+    if (!$this->token) {
+      throw new InvalidVINWikiSession("Invalid authorization token. Call setup_session first");
+    }
+    if (!$license_plate || strlen($license_plate) <= 0 || strlen($license_plate) > 30) {
+      return null;
+    }
+    if (!$state_abbr || strlen($state_abbr) <= 0 || strlen($state_abbr) > 3) {
+      return null;
+    }
+
+    // Fetch License Plate
+    $post_result = $this->http_post("pl82vin", Array(
+      "plate" => $license_plate,
+      "state" => $state_abbr
+    ), $this->token);
+    $result = null;
+
+    // Check HTTP Result
+    if (!$post_result) {
+      return null;
+    }
+    if (!($result = json_decode($this->endpoint_cache["pl82vin"], true))) {
+      return null;
+    }
+    if ($result["status"] !== "ok" || !isset($result["plate_lookup"])) {
+      return null;
+    }
+
+    // Return
+    return $result["plate_lookup"];
   }
 
   /**
@@ -116,7 +164,7 @@ class VINWiki {
    * @author Alec M. <https://amattu.com>
    * @date 2021-03-31T11:11:18-040
    */
-  private function http_post(string $endpoint, array $fields) : bool
+  private function http_post(string $endpoint, array $fields, $bearer = "") : bool
   {
     // cURL Initialization
     $handle = curl_init();
@@ -127,6 +175,9 @@ class VINWiki {
     rtrim($field_string, "&");
 
     // Options
+    if ($bearer) {
+      curl_setopt($handle, CURLOPT_HTTPHEADER, ["Authorization: Bearer $bearer"]);
+    }
     curl_setopt($handle, CURLOPT_URL, $this->endpoints[$endpoint]);
     curl_setopt($handle, CURLOPT_POST, count($fields));
     curl_setopt($handle, CURLOPT_POSTFIELDS, $field_string);
