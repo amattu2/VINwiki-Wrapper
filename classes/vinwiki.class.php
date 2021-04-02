@@ -263,7 +263,7 @@ class VINWiki {
     $feed = $result ? json_decode($result, true) : Array();
 
     // Return
-    return $feed;
+    return $feed["feed"];
   }
 
   /**
