@@ -137,6 +137,7 @@ class VINWiki {
   /**
    * Update a vehicle by VIN
    *
+   * @see setup_session
    * @param string $vin
    * @param int $year
    * @param string $make
