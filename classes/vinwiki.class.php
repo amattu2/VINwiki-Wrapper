@@ -9,6 +9,12 @@
 // Class Namespace
 namespace amattu;
 
+// Exception Classes
+class UnknownHTTPException extends \Exception {}
+class InvalidHTTPResponseException extends \Exception {}
+class InvalidVINWikiStatus extends \Exception {}
+class InvalidVINWikiToken extends \Exception {}
+  
 /**
  * A vinwiki.com API access class
  */
@@ -33,31 +39,47 @@ class VINWiki {
   public function __construct() {}
 
   /**
-   * Setup VINWiki Session, Make new post
+   * Setup a VINWiki Session
    *
    * @param string $login
    * @param string $password
-   * @return boolean result
+   * @return bool result
    * @throws TypeError
+   * @throws UnknownHTTPException
+   * @throws InvalidHTTPResponseException
+   * @throws InvalidVINWikiStatus
+   * @throws InvalidVINWikiToken
    * @author Alec M. <https://amattu.com>
-   * @date 2021-03-31T18:22:33-040
+   * @date 2021-04-02T10:31:52-040
    */
-  public function create_event(string $login, string $password, array $post) : bool
+  public function setup_session(string $login, string $password) : bool
   {
     // Save Parameters, Setup Session
     $this->login = $login;
     $this->password = $password;
-    $result = $this->http_post("authenticate", Array(
+    $get_result = $this->http_post("authenticate", Array(
       "login" => $login,
       "password" => $password
     ));
+    $result = null;
 
-    // Check Result
-    if ($result) {
-      // TBD: save token
-      // TBD: make post
-      print_r($this->endpoint_cache["authenticate"]);
+    // Check HTTP Result
+    if (!$get_result) {
+      throw new UnknownHTTPException("http_post failed for an unknown reason");
     }
+    if (!($result = json_decode($this->endpoint_cache["authenticate"], true))) {
+      throw new InvalidHTTPResponseException("VINWiki returned an unknown response");
+    }
+    if ($result["status"] !== "ok") {
+      throw new InvalidVINWikiStatus("VINWiki rejected the authorization for an unkown reason");
+    }
+    if (!isset($result["token"]) || empty($result["token"]) || empty($result["token"]["token"])) {
+      throw new InvalidVINWikiToken("VINWiki provided an invalid authorization token");
+    }
+
+    // Return
+    $this->token = $result["token"]["token"];
+    return true;
   }
 
   /**
