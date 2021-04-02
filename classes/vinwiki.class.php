@@ -100,6 +100,7 @@ class VINWiki {
    */
   public function pl82vin(string $license_plate, string $state_abbr) : ?array
   {
+    // Check Parameters
     if (!$this->token) {
       throw new InvalidVINWikiSession("Invalid authorization token. Call setup_session first");
     }
@@ -131,6 +132,38 @@ class VINWiki {
 
     // Return
     return $result["plate_lookup"];
+  }
+
+  public function update_vehicle(string $vin, int $year, string $make, string $model, $trim = "") : bool
+  {
+    // Check Parameters
+    if (!$this->token) {
+      throw new InvalidVINWikiSession("Invalid authorization token. Call setup_session first");
+    }
+    if (strlen($vin) != 17) {
+      return false;
+    }
+
+    // Update Vehicle
+    $endpoint = $this->endpoints["update_vehicle"] . $vin;
+    $post_result = $this->http_post($endpoint, Array(
+      "year" => $year,
+      "make" => $make,
+      "model" => $model,
+      "trim" => $trim
+    ), $this->token);
+    $result = null;
+
+    // Check HTTP Result
+    if (!($result = json_decode($this->endpoint_cache[$endpoint], true))) {
+      return false;
+    }
+    if ($result["status"] !== "ok") {
+      return false;
+    }
+
+    // Return
+    return true;
   }
 
   /**
