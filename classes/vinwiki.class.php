@@ -229,14 +229,17 @@ class VINWiki {
 
     // Check HTTP Result
     if (!($result = json_decode($this->endpoint_cache[$endpoint], true))) {
-      return false;
+      return nukk;
     }
     if ($result["status"] !== "ok") {
-      return false;
+      return null;
+    }
+    if (!isset($result["post"])) {
+      return null;
     }
 
     // Return
-    return $result;
+    return $result["post"];
   }
 
   /**
