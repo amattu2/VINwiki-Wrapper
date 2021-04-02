@@ -134,6 +134,20 @@ class VINWiki {
     return $result["plate_lookup"];
   }
 
+  /**
+   * Update a vehicle by VIN
+   *
+   * @param string $vin
+   * @param int $year
+   * @param string $make
+   * @param string $model
+   * @param string $trim
+   * @return bool status
+   * @throws TypeError
+   * @throws InvalidVINWikiSession
+   * @author Alec M. <https://amattu.com>
+   * @date 2021-04-02T11:42:11-040
+   */
   public function update_vehicle(string $vin, int $year, string $make, string $model, $trim = "") : bool
   {
     // Check Parameters
