@@ -15,6 +15,8 @@ class InvalidHTTPResponseException extends \Exception {}
 class InvalidVINWikiStatus extends \Exception {}
 class InvalidVINWikiToken extends \Exception {}
 class InvalidVINWikiSession extends \Exception {}
+class InvalidVINWikiPerson extends \Exception {}
+class InvalidVINwikiUUID extends \Exception {}
 
 /**
  * A vinwiki.com API access class
@@ -22,6 +24,7 @@ class InvalidVINWikiSession extends \Exception {}
 class VINWiki {
   // Variables
   private $token = null;
+  private $person = null;
   private $endpoints = Array(
     "authenticate" => "https://rest.vinwiki.com/auth/authenticate", /* POST */
     "feed" => "https://rest.vinwiki.com/vehicle/feed/", /* GET */
@@ -29,6 +32,7 @@ class VINWiki {
     "update_vehicle" => "https://rest.vinwiki.com/vehicle/vin/", /* POST, UPDATE */
     "create_post" => "https://rest.vinwiki.com/vehicle/post/", /* POST, CREATE */
     "me" => "https://rest.vinwiki.com/person/notification_count/me", /* GET */
+    "person_feed" => "https://rest.vinwiki.com/person/feed/", /* GET */
   );
   private $endpoint_cache = Array();
   private const INVALID_TOKEN_NO_SETUP = "Invalid authorization token. Call setup_session first";
@@ -53,6 +57,7 @@ class VINWiki {
    * @throws InvalidHTTPResponseException
    * @throws InvalidVINWikiStatus
    * @throws InvalidVINWikiToken
+   * @throws InvalidVINWikiPerson
    * @author Alec M. <https://amattu.com>
    * @date 2021-04-02T10:31:52-040
    */
@@ -79,8 +84,12 @@ class VINWiki {
     if (!isset($result["token"]) || empty($result["token"]) || empty($result["token"]["token"])) {
       throw new InvalidVINWikiToken("VINWiki provided an invalid authorization token");
     }
+    if (!isset($result["person"]) || empty($result["person"])) {
+      throw new InvalidVINWikiPerson("VINWiki returned an invalid person array");
+    }
 
     // Return
+    $this->person = $result["person"];
     $this->token = $result["token"]["token"];
     return true;
   }
@@ -296,6 +305,48 @@ class VINWiki {
 
     // Return
     return $result["notification_count"];
+  }
+
+  /**
+   * Fetch a VINWiki person feed
+   *
+   * @return ?array VINWiki feed
+   * @throws InvalidVINWikiSession
+   * @throws InvalidVINWikiPerson
+   * @throws InvalidVINwikiUUID
+   * @author Alec M. <https://amattu.com>
+   * @date 2021-04-08T11:37:33-040
+   */
+  public function fetch_person_feed() : ?array
+  {
+    // Check Parameters
+    if (!$this->token) {
+      throw new InvalidVINWikiSession(self::INVALID_TOKEN_NO_SETUP);
+    }
+    if (!$this->person || empty($this->person)) {
+      throw new InvalidVINWikiPerson("No valid VINWiki person set. Please call setup_session first.");
+    }
+    if (!isset($this->person["uuid"]) || empty($this->person["uuid"])) {
+      throw new InvalidVINwikiUUID("No valid VINWiki uuid set. Please call setup_session first.");
+    }
+
+    // Fetch Feed
+    $get_result = $this->http_get($this->endpoints["person_feed"] . $this->person["uuid"], $this->token);
+    $result = null;
+
+    // Check HTTP Result
+    if (!($result = json_decode($get_result, true))) {
+      return null;
+    }
+    if ($result["status"] !== "ok") {
+      return null;
+    }
+    if (!isset($result["feed"])) {
+      return null;
+    }
+
+    // Return
+    return $result["feed"];
   }
 
   /**
