@@ -7,7 +7,7 @@ $wrapper = new amattu\VINWiki();
 
 // Setup a Vinwiki session
 // Only required for create/update functions
-$wrapper->setup_session("USERNAME", "PASSWORD");
+//$wrapper->setup_session("USERNAME", "PASSWORD");
 
 /*
 // Fetch a vehicle feed
@@ -36,4 +36,12 @@ echo "<h1>Create a feed post</h1>", "<pre>";
 print_r($wrapper->create_post("WBAWB735X9P159047", Array("text" => "added to vinwiki via API")));
 echo "</pre>";
 */
+
+/*
+// Fetch a user VINWiki notification feed
+echo "<h1>Notifications</h1>", "<pre>";
+print_r($wrapper->fetch_notifications());
+echo "</pre>";
+*/
+
 ?>
