@@ -201,8 +201,32 @@ Array
 )
 ```
 
-# Notes
-N/A
+### Fetch Notifications
+PHPDoc
+```PHP
+/**
+ * Fetch a user notification feed
+ *
+ * @return ?array VINWiki notification result
+ * @throws InvalidVINWikiSession
+ * @author Alec M. <https://amattu.com>
+ * @date 2021-04-08T11:11:54-040
+ */
+public function fetch_notifications() : ?array
+```
+
+Usage
+```PHP
+$wrapper->fetch_notifications()
+```
+
+Success return result
+```
+Array
+(
+  [unseen] =>
+)
+```
 
 # Requirements & Dependencies
 PHP 7.0+
