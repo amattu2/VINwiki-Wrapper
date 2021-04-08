@@ -136,11 +136,11 @@ PHPDoc
  *
  * @param string $vin
  * @param array Array(
- *  ?"class_name",
- *  ?"client",
- *  ?"event_date",
- *  ?"mileage",
- *  "text"
+ *  string ?"class_name",
+ *  string ?"client",
+ *  DateTime ?"event_date",
+ *  int ?"mileage",
+ *  string "text"
  * )
  * @return array VINWiki response
  * @throws TypeError
@@ -350,7 +350,7 @@ Array
   [bio] =>
   [full_name] =>
   [location] =>
-  [display_name] => 
+  [display_name] =>
   [social_facebook] =>
   [social_instagram] =>
   [social_twitter] =>

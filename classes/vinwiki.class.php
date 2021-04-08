@@ -37,6 +37,7 @@ class VINWiki {
   );
   private $endpoint_cache = Array();
   private const INVALID_TOKEN_NO_SETUP = "Invalid authorization token. Call setup_session first";
+  private const VINWIKI_POST_DATE_FORMAT = "Y-m-d\TH:i:s.000\Z";
 
   /**
    * Setup the VINWiki class
@@ -196,11 +197,11 @@ class VINWiki {
    *
    * @param string $vin
    * @param array Array(
-   *  ?"class_name",
-   *  ?"client",
-   *  ?"event_date",
-   *  ?"mileage",
-   *  "text"
+   *  string ?"class_name",
+   *  string ?"client",
+   *  DateTime ?"event_date",
+   *  int ?"mileage",
+   *  string "text"
    * )
    * @return array VINWiki response
    * @throws TypeError
@@ -226,8 +227,10 @@ class VINWiki {
     if (!isset($post["client"])) {
       $post["client"] = "web";
     }
-    if (!isset($post["event_date"])) {
-      $post["event_date"] =  date("Y-m-d\TH:i:s.000\Z");
+    if (!isset($post["event_date"]) || !($post["event_date"] instanceof \DateTime)) {
+      $post["event_date"] =  date(self::VINWIKI_POST_DATE_FORMAT);
+    } else {
+      $post["event_date"] = $post["event_date"]->format(self::VINWIKI_POST_DATE_FORMAT);
     }
 
     // Create Post
