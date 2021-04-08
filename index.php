@@ -39,9 +39,16 @@ echo "</pre>";
 
 
 // Fetch a user VINWiki notification feed
+/*
 echo "<h1>Notifications</h1>", "<pre>";
 print_r($wrapper->fetch_person_notifications());
 echo "</pre>";
+*/
 
-
+// Fetch a user VINWiki feed
+/*
+echo "<h1>Notifications</h1>", "<pre>";
+print_r($wrapper->fetch_person_feed());
+echo "</pre>";
+*/
 ?>
