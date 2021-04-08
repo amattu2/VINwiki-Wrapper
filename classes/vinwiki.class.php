@@ -272,7 +272,7 @@ class VINWiki {
    * @author Alec M. <https://amattu.com>
    * @date 2021-04-08T11:11:54-040
    */
-  public function fetch_notifications() : ?array
+  public function fetch_person_notifications() : ?array
   {
     // Check Parameters
     if (!$this->token) {
