@@ -33,6 +33,7 @@ class VINWiki {
     "me" => "https://rest.vinwiki.com/person/notification_count/me", /* GET */
   );
   private $endpoint_cache = Array();
+  private const INVALID_TOKEN_NO_SETUP = "Invalid authorization token. Call setup_session first";
 
   /**
    * Setup the VINWiki class
@@ -104,7 +105,7 @@ class VINWiki {
   {
     // Check Parameters
     if (!$this->token) {
-      throw new InvalidVINWikiSession("Invalid authorization token. Call setup_session first");
+      throw new InvalidVINWikiSession(self::INVALID_TOKEN_NO_SETUP);
     }
     if (!$license_plate || strlen($license_plate) <= 0 || strlen($license_plate) > 30) {
       return null;
@@ -155,7 +156,7 @@ class VINWiki {
   {
     // Check Parameters
     if (!$this->token) {
-      throw new InvalidVINWikiSession("Invalid authorization token. Call setup_session first");
+      throw new InvalidVINWikiSession(self::INVALID_TOKEN_NO_SETUP);
     }
     if (strlen($vin) != 17) {
       return false;
@@ -205,7 +206,7 @@ class VINWiki {
   {
     // Check Parameters
     if (!$this->token) {
-      throw new InvalidVINWikiSession("Invalid authorization token. Call setup_session first");
+      throw new InvalidVINWikiSession(self::INVALID_TOKEN_NO_SETUP);
     }
     if (strlen($vin) != 17) {
       return null;
@@ -279,7 +280,7 @@ class VINWiki {
   {
     // Check Parameters
     if (!$this->token) {
-      throw new InvalidVINWikiSession("Invalid authorization token. Call setup_session first");
+      throw new InvalidVINWikiSession(self::INVALID_TOKEN_NO_SETUP);
     }
 
     // Fetch Notifications
