@@ -313,12 +313,13 @@ class VINWiki {
    * Perform HTTP GET Request
    *
    * @param string $endpoint
+   * @param string $bearer
    * @return string HTTP result body | null
    * @throws TypeError
    * @author Alec M. <https://amattu.com>
    * @date 2021-03-31T18:13:00-040
    */
-  private function http_get(string $endpoint) : ?string
+  private function http_get(string $endpoint, string $bearer = "") : ?string
   {
     // cURL Initialization
     $handle = curl_init();
@@ -326,6 +327,9 @@ class VINWiki {
     $error = 0;
 
     // Options
+    if ($bearer) {
+      curl_setopt($handle, CURLOPT_HTTPHEADER, ["Authorization: Bearer $bearer"]);
+    }
     curl_setopt($handle, CURLOPT_URL, $endpoint);
     curl_setopt($handle, CURLOPT_HTTPGET, 1);
     curl_setopt($handle, CURLOPT_FAILONERROR, 1);
