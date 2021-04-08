@@ -33,6 +33,7 @@ class VINWiki {
     "create_post" => "https://rest.vinwiki.com/vehicle/post/", /* POST, CREATE */
     "me" => "https://rest.vinwiki.com/person/notification_count/me", /* GET */
     "person_feed" => "https://rest.vinwiki.com/person/feed/", /* GET */
+    "person_profile" => "https://rest.vinwiki.com/person/profile/", /* GET */
   );
   private $endpoint_cache = Array();
   private const INVALID_TOKEN_NO_SETUP = "Invalid authorization token. Call setup_session first";
@@ -347,6 +348,55 @@ class VINWiki {
 
     // Return
     return $result["feed"];
+  }
+
+  /**
+   * Fetch a VINWiki person profile
+   *
+   * @param string VINWiki UUID
+   * @return ?array profile
+   * @throws TypeError
+   * @throws InvalidVINWikiSession
+   * @throws InvalidVINWikiPerson
+   * @throws InvalidVINwikiUUID
+   * @author Alec M. <https://amattu.com>
+   * @date 2021-04-08T12:05:59-040
+   */
+  public function fetch_person_profile(string $uuid = "") : ?array
+  {
+    // Check Parameters
+    if (!$this->token) {
+      throw new InvalidVINWikiSession(self::INVALID_TOKEN_NO_SETUP);
+    }
+    if (empty($uuid)) {
+      if (!$this->person || empty($this->person)) {
+        throw new InvalidVINWikiPerson("No VINWiki UUID provided and a default is not available");
+      }
+      if (!isset($this->person["uuid"]) || empty($this->person["uuid"])) {
+        throw new InvalidVINwikiUUID("No VINWiki UUID provided and a default is not available");
+      }
+
+      // Default
+      $uuid = $this->person["uuid"];
+    }
+
+    // Fetch Profile
+    $get_result = $this->http_get($this->endpoints["person_profile"] . $uuid, $this->token);
+    $result = null;
+
+    // Check HTTP Result
+    if (!($result = json_decode($get_result, true))) {
+      return null;
+    }
+    if ($result["status"] !== "ok") {
+      return null;
+    }
+    if (!isset($result["profile"])) {
+      return null;
+    }
+
+    // Return
+    return $result["profile"];
   }
 
   /**

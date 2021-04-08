@@ -307,5 +307,57 @@ Array
 )
 ```
 
+### Fetch A Person's Profile
+PHPDoc
+```PHP
+/**
+ * Fetch a VINWiki person profile
+ *
+ * @param string VINWiki UUID
+ * @return ?array profile
+ * @throws TypeError
+ * @throws InvalidVINWikiSession
+ * @throws InvalidVINWikiPerson
+ * @throws InvalidVINwikiUUID
+ * @author Alec M. <https://amattu.com>
+ * @date 2021-04-08T12:05:59-040
+ */
+public function fetch_person_profile(string $uuid = "") : ?array
+```
+
+Usage
+```PHP
+$wrapper->fetch_person_profile("UUID")
+```
+The `UUID` argument is optional, with the default being the authenticated user's profile
+
+Success return result
+```
+Array
+(
+  [uuid] =>
+  [username] =>
+  [first_name] =>
+  [last_name] =>
+  [profile] =>
+  [profile_picture_uuid] =>
+  [following_vehicle_count] =>
+  [follower_count] =>
+  [following_count] =>
+  [post_count] =>
+  [avatar] =>
+  [website_url] =>
+  [bio] =>
+  [full_name] =>
+  [location] =>
+  [display_name] => 
+  [social_facebook] =>
+  [social_instagram] =>
+  [social_twitter] =>
+  [social_linkedin] =>
+  [email] =>
+)
+```
+
 # Requirements & Dependencies
 PHP 7.0+

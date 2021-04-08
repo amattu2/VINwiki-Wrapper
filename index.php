@@ -47,8 +47,16 @@ echo "</pre>";
 
 // Fetch a user VINWiki feed
 /*
-echo "<h1>Notifications</h1>", "<pre>";
+echo "<h1>User (Self) Feed</h1>", "<pre>";
 print_r($wrapper->fetch_person_feed());
+echo "</pre>";
+*/
+
+// Fetch a VINWiki user profile
+/*
+echo "<h1>User Profile</h1>", "<pre>";
+//print_r($wrapper->fetch_person_profile());
+print_r($wrapper->fetch_person_profile("ff71551a-361f-4f8d-a105-742f773cd69a"));
 echo "</pre>";
 */
 ?>
