@@ -30,6 +30,7 @@ class VINWiki {
     "pl82vin" => "https://rest.vinwiki.com/vehicle/plate", /* POST */
     "update_vehicle" => "https://rest.vinwiki.com/vehicle/vin/", /* POST, UPDATE */
     "create_post" => "https://rest.vinwiki.com/vehicle/post/", /* POST, CREATE */
+    "me" => "https://rest.vinwiki.com/person/notification_count/me", /* GET */
   );
   private $endpoint_cache = Array();
 
@@ -264,6 +265,40 @@ class VINWiki {
 
     // Return
     return $feed["feed"];
+  }
+
+  /**
+   * Fetch a user notification feed
+   *
+   * @return ?array VINWiki notification result
+   * @throws InvalidVINWikiSession
+   * @author Alec M. <https://amattu.com>
+   * @date 2021-04-08T11:11:54-040
+   */
+  public function fetch_notifications() : ?array
+  {
+    // Check Parameters
+    if (!$this->token) {
+      throw new InvalidVINWikiSession("Invalid authorization token. Call setup_session first");
+    }
+
+    // Fetch Notifications
+    $get_result = $this->http_get($this->endpoints["me"], $this->token);
+    $result = null;
+
+    // Check HTTP Result
+    if (!($result = json_decode($get_result, true))) {
+      return null;
+    }
+    if ($result["status"] !== "ok") {
+      return null;
+    }
+    if (!isset($result["notification_count"])) {
+      return null;
+    }
+
+    // Return
+    return $result["notification_count"];
   }
 
   /**
