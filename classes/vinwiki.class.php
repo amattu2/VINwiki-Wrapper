@@ -229,7 +229,7 @@ class VINWiki {
 
     // Check HTTP Result
     if (!($result = json_decode($this->endpoint_cache[$endpoint], true))) {
-      return nukk;
+      return null;
     }
     if ($result["status"] !== "ok") {
       return null;
