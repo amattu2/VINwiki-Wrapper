@@ -21,8 +21,6 @@ class InvalidVINWikiSession extends \Exception {}
  */
 class VINWiki {
   // Variables
-  private $login = "";
-  private $password = "";
   private $token = null;
   private $endpoints = Array(
     "authenticate" => "https://rest.vinwiki.com/auth/authenticate", /* POST */
@@ -62,8 +60,6 @@ class VINWiki {
   {
     // Save Parameters, Setup Session
     $endpoint = $this->endpoints["authenticate"];
-    $this->login = $login;
-    $this->password = $password;
     $post_result = $this->http_post($endpoint, Array(
       "login" => $login,
       "password" => $password
