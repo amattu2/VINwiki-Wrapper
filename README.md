@@ -25,6 +25,7 @@ PHPDoc
  * @throws InvalidHTTPResponseException
  * @throws InvalidVINWikiStatus
  * @throws InvalidVINWikiToken
+ * @throws InvalidVINWikiPerson
  * @author Alec M. <https://amattu.com>
  * @date 2021-04-02T10:31:52-040
  */
@@ -212,12 +213,12 @@ PHPDoc
  * @author Alec M. <https://amattu.com>
  * @date 2021-04-08T11:11:54-040
  */
-public function fetch_notifications() : ?array
+public function fetch_person_notifications() : ?array
 ```
 
 Usage
 ```PHP
-$wrapper->fetch_notifications()
+$wrapper->fetch_person_notifications()
 ```
 
 Success return result
@@ -225,6 +226,84 @@ Success return result
 Array
 (
   [unseen] =>
+)
+```
+
+### Fetch A Person's Feed
+PHPDoc
+```PHP
+/**
+ * Fetch a VINWiki person feed
+ *
+ * @return ?array VINWiki feed
+ * @throws InvalidVINWikiSession
+ * @throws InvalidVINWikiPerson
+ * @throws InvalidVINwikiUUID
+ * @author Alec M. <https://amattu.com>
+ * @date 2021-04-08T11:37:33-040
+ */
+public function fetch_person_feed() : ?array
+```
+
+Usage
+```PHP
+$wrapper->fetch_person_feed();
+```
+
+Success return result
+```
+Array
+(
+  [0] => Array
+  (
+    [post] => Array
+    (
+      [uuid] =>
+      [id] =>
+      [type] => photo|generic
+      [client] => ios|web|android
+      [dest_url] =>
+      [subject_uuid] =>
+      [data] =>
+      [post_text] =>
+      [comment_count] =>
+      [locale] =>
+      [post_time] =>
+      [post_date] =>
+      [post_date_ago] =>
+      [event_time] =>
+      [event_date] =>
+      [person] => Array
+      (
+          [id] =>
+          [uuid] =>
+          [short_url] =>
+          [username] =>
+          [avatar] =>
+      )
+      [vehicle] => Array
+      (
+          [vin] =>
+          [id] =>
+          [make] =>
+          [model] =>
+          [year] =>
+          [trim] =>
+          [long_name] =>
+          [follower_count] =>
+          [post_count] =>
+      )
+      [image] => Array
+      (
+          [id] =>
+          [uuid] =>
+          [thumbnail] =>
+          [poster] =>
+          [large] =>
+      )
+    )
+  )
+  ...
 )
 ```
 
