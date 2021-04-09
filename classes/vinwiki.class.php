@@ -249,12 +249,12 @@ class VINWiki {
    * Fetch Vehicle Feed By VIN
    *
    * @param string $vin
-   * @return array feed array
+   * @return ?array feed array
    * @throws TypeError
    * @author Alec M. <https://amattu.com>
    * @date 2021-03-31T18:19:58-040
    */
-  public function fetch_feed(string $vin) : array
+  public function fetch_feed(string $vin) : ?array
   {
     // Checks
     if (strlen($vin) != 17) {
@@ -263,10 +263,10 @@ class VINWiki {
 
     // Variables
     $result = $this->http_get($this->endpoints["feed"] . $vin);
-    $feed = $result ? json_decode($result, true) : Array();
+    $feed = json_decode($result, true);
 
     // Return
-    return $feed["feed"];
+    return !empty($feed) && isset($feed["feed"]) ? $feed["feed"] : null;
   }
 
   /**
