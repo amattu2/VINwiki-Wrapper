@@ -41,15 +41,6 @@ class VINWiki {
   private const VINWIKI_POST_DATE_FORMAT = "Y-m-d\TH:i:s.000\Z";
 
   /**
-   * Setup the VINWiki class
-   *
-   * @throws None
-   * @author Alec M. <https://amattu.com>
-   * @date 2021-03-31T11:03:28-040
-   */
-  public function __construct() {}
-
-  /**
    * Setup a VINWiki Session
    *
    * @param string $login
