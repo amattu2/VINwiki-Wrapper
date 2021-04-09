@@ -59,4 +59,11 @@ echo "<h1>User Profile</h1>", "<pre>";
 print_r($wrapper->fetch_person_profile("ff71551a-361f-4f8d-a105-742f773cd69a"));
 echo "</pre>";
 */
+
+/*
+// Perform VINWiki Search
+echo "<h1>Vehicle Search Query</h1>", "<pre>";
+print_r($wrapper->vehicle_search("2009 BMW 335i"));
+echo "</pre>";
+*/
 ?>

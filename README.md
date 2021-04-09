@@ -359,5 +359,49 @@ Array
 )
 ```
 
+### Search for vehicles
+PHPDoc
+```PHP
+/**
+ * Search for vehicles
+ *
+ * @param string VIN / Year / Make / Model
+ * @return ?array VINWiki search result
+ * @throws TypeError
+ * @throws InvalidVINWikiSession
+ * @author Alec M. <https://amattu.com>
+ * @date 2021-04-09T10:14:57-040
+ */
+public function vehicle_search(string $query) : ?array
+```
+
+Usage
+```PHP
+$wrapper->vehicle_search("2009 BMW 335i");
+```
+
+Success return result
+```
+Array
+(
+  [vehicles] => Array
+  (
+    [0] => Array
+    (
+        [vin] =>
+        [make] =>
+        [model] =>
+        [year] =>
+        [trim] =>
+        [long_name] =>
+        [icon_photo] =>
+    )
+    ...
+  )
+  [term] => string
+  [count] => int
+)
+```
+
 # Requirements & Dependencies
 PHP 7.0+

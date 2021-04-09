@@ -27,10 +27,11 @@ class VINWiki {
   private $person = null;
   private $endpoints = Array(
     "authenticate" => "https://rest.vinwiki.com/auth/authenticate", /* POST */
-    "feed" => "https://rest.vinwiki.com/vehicle/feed/", /* GET */
     "pl82vin" => "https://rest.vinwiki.com/vehicle/plate", /* POST */
-    "update_vehicle" => "https://rest.vinwiki.com/vehicle/vin/", /* POST, UPDATE */
-    "create_post" => "https://rest.vinwiki.com/vehicle/post/", /* POST, CREATE */
+    "update_vehicle" => "https://rest.vinwiki.com/vehicle/vin/", /* POST */
+    "create_post" => "https://rest.vinwiki.com/vehicle/post/", /* POST */
+    "vehicle_search" => "https://rest.vinwiki.com/vehicle/search", /* POST */
+    "feed" => "https://rest.vinwiki.com/vehicle/feed/", /* GET */
     "me" => "https://rest.vinwiki.com/person/notification_count/me", /* GET */
     "person_feed" => "https://rest.vinwiki.com/person/feed/", /* GET */
     "person_profile" => "https://rest.vinwiki.com/person/profile/", /* GET */
@@ -400,6 +401,47 @@ class VINWiki {
 
     // Return
     return $result["profile"];
+  }
+
+  /**
+   * Search for vehicles
+   *
+   * @param string VIN / Year / Make / Model
+   * @return ?array VINWiki search result
+   * @throws TypeError
+   * @throws InvalidVINWikiSession
+   * @author Alec M. <https://amattu.com>
+   * @date 2021-04-09T10:14:57-040
+   */
+  public function vehicle_search(string $query) : ?array
+  {
+    // Check Parameters
+    if (!$this->token) {
+      throw new InvalidVINWikiSession(self::INVALID_TOKEN_NO_SETUP);
+    }
+    if (!$query || strlen($query) < 3) {
+      return null;
+    }
+
+    // Query For Vehicles
+    $post_result = $this->http_post($this->endpoints["vehicle_search"], Array(
+      "query" => $query,
+    ), $this->token);
+    $result = null;
+
+    // Check HTTP Result
+    if (!$post_result) {
+      return null;
+    }
+    if (!($result = json_decode($this->endpoint_cache[$this->endpoints["vehicle_search"]], true))) {
+      return null;
+    }
+    if ($result["status"] !== "ok" || !isset($result["results"])) {
+      return null;
+    }
+
+    // Return
+    return $result["results"];
   }
 
   /**
