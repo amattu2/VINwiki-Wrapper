@@ -433,7 +433,7 @@ class VINWiki {
     curl_setopt($handle, CURLOPT_FOLLOWLOCATION, 1);
     curl_setopt($handle, CURLOPT_MAXREDIRS, 2);
     curl_setopt($handle, CURLOPT_RETURNTRANSFER, 1);
-    curl_setopt($handle, CURLOPT_TIMEOUT, 10);
+    curl_setopt($handle, CURLOPT_TIMEOUT, 20);
 
     // Fetch Result
     $result = curl_exec($handle);
@@ -472,7 +472,7 @@ class VINWiki {
     curl_setopt($handle, CURLOPT_FOLLOWLOCATION, 1);
     curl_setopt($handle, CURLOPT_MAXREDIRS, 2);
     curl_setopt($handle, CURLOPT_RETURNTRANSFER, 1);
-    curl_setopt($handle, CURLOPT_TIMEOUT, 10);
+    curl_setopt($handle, CURLOPT_TIMEOUT, 20);
 
     // Fetch Result
     $result = curl_exec($handle);
