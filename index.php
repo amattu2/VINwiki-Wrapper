@@ -1,6 +1,6 @@
 <?php
 // Setup wrapper
-require("classes/vinwiki.class.php");
+require("VINWiki.class.php");
 
 // Spawn a new instance
 $wrapper = new amattu\VINWiki();
