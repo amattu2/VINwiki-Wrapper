@@ -1,18 +1,25 @@
 # Introduction
+
 This is a PHP-7 VinWiki.com API endpoint wrapper. Take a look at the index files or Usage section below.
 
 # Usage
+
+Install via `composer require amattu2/vinwiki-wrapper`
+
 ### Setup a class instance
+
 ```PHP
 // Require file
-require("classes/vinwiki.class.php");
+require("src/VINWiki.php");
 
 // Spawn instance
-$wrapper = new amattu\VINWiki();
+$wrapper = new amattu2\VINWiki();
 ```
 
 ### Fetch a API token
+
 PHPDoc
+
 ```PHP
 /**
  * Setup a VINWiki Session
@@ -33,17 +40,21 @@ public function setup_session(string $login, string $password) : bool
 ```
 
 Usage
+
 ```PHP
 $wrapper->setup_session("email|username", "password")
 ```
 
 Only needed if you use:
+
 - pl82vin
 - update_vehicle
 - create_post
 
 ### Fetch a vehicle feed
+
 PHPDoc
+
 ```PHP
 /**
  * Fetch Vehicle Feed By VIN
@@ -58,12 +69,15 @@ public function fetch_feed(string $vin) : array
 ```
 
 Usage
+
 ```PHP
 $wrapper->fetch_feed("VIN_NUMBER")
 ```
 
 ### Decode a license plate
+
 PHPDoc
+
 ```PHP
 /**
  * Fetch a VIN from a license plate
@@ -81,11 +95,13 @@ public function pl82vin(string $license_plate, string $state_abbr) : ?array
 ```
 
 Usage
+
 ```PHP
 $wrapper->pl82vin("PLATE_NO", "STATE")
 ```
 
 Success return result
+
 ```
 Array
 (
@@ -98,7 +114,9 @@ Array
 ```
 
 ### Update a vehicle
+
 PHPDoc
+
 ```PHP
 /**
  * Update a vehicle by VIN
@@ -119,17 +137,21 @@ public function update_vehicle(string $vin, int $year, string $make, string $mod
 ```
 
 Usage
+
 ```PHP
 $wrapper->update_vehicle("VIN", "YEAR", "MAKE", "MODEL", "TRIM")
 ```
 
 Success return result
+
 ```
 true
 ```
 
 ### Create a post
+
 PHPDoc
+
 ```PHP
 /**
  * Create a new VINWiki post
@@ -152,11 +174,13 @@ public function create_post(string $vin, array $post) : ?array
 ```
 
 Usage
+
 ```PHP
 $wrapper->create_post("VIN", Array("text" => "added to vinwiki via API"))
 ```
 
 Success return result
+
 ```
 Array
 (
@@ -203,7 +227,9 @@ Array
 ```
 
 ### Fetch Notifications
+
 PHPDoc
+
 ```PHP
 /**
  * Fetch a user notification feed
@@ -217,11 +243,13 @@ public function fetch_person_notifications() : ?array
 ```
 
 Usage
+
 ```PHP
 $wrapper->fetch_person_notifications()
 ```
 
 Success return result
+
 ```
 Array
 (
@@ -230,7 +258,9 @@ Array
 ```
 
 ### Fetch A Person's Feed
+
 PHPDoc
+
 ```PHP
 /**
  * Fetch a VINWiki person feed
@@ -246,11 +276,13 @@ public function fetch_person_feed() : ?array
 ```
 
 Usage
+
 ```PHP
 $wrapper->fetch_person_feed();
 ```
 
 Success return result
+
 ```
 Array
 (
@@ -308,7 +340,9 @@ Array
 ```
 
 ### Fetch A Person's Profile
+
 PHPDoc
+
 ```PHP
 /**
  * Fetch a VINWiki person profile
@@ -326,12 +360,15 @@ public function fetch_person_profile(string $uuid = "") : ?array
 ```
 
 Usage
+
 ```PHP
 $wrapper->fetch_person_profile("UUID")
 ```
+
 The `UUID` argument is optional, with the default being the authenticated user's profile
 
 Success return result
+
 ```
 Array
 (
@@ -360,7 +397,9 @@ Array
 ```
 
 ### Search for vehicles
+
 PHPDoc
+
 ```PHP
 /**
  * Search for vehicles
@@ -376,11 +415,13 @@ public function vehicle_search(string $query) : ?array
 ```
 
 Usage
+
 ```PHP
 $wrapper->vehicle_search("2009 BMW 335i");
 ```
 
 Success return result
+
 ```
 Array
 (
@@ -404,4 +445,5 @@ Array
 ```
 
 # Requirements & Dependencies
+
 PHP 7.0+

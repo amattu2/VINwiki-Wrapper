@@ -1,31 +1,53 @@
 <?php
 /*
-  Produced 2021
-  By https://amattu.com/links/github
-  Copy Alec M.
-  License GNU Affero General Public License v3.0
-*/
+ * Produced: Thu Mar 09 2023
+ * Author: Alec M.
+ * GitHub: https://amattu.com/links/github
+ * Copyright: (C) 2023 Alec M.
+ * License: License GNU Affero General Public License v3.0
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 
 // Class Namespace
-namespace amattu;
+namespace amattu2;
 
 // Exception Classes
-class UnknownHTTPException extends \Exception {}
-class InvalidHTTPResponseException extends \Exception {}
-class InvalidVINWikiStatus extends \Exception {}
-class InvalidVINWikiToken extends \Exception {}
-class InvalidVINWikiSession extends \Exception {}
-class InvalidVINWikiPerson extends \Exception {}
-class InvalidVINwikiUUID extends \Exception {}
+class UnknownHTTPException extends \Exception
+{}
+class InvalidHTTPResponseException extends \Exception
+{}
+class InvalidVINWikiStatus extends \Exception
+{}
+class InvalidVINWikiToken extends \Exception
+{}
+class InvalidVINWikiSession extends \Exception
+{}
+class InvalidVINWikiPerson extends \Exception
+{}
+class InvalidVINwikiUUID extends \Exception
+{}
 
 /**
  * A vinwiki.com API access class
  */
-class VINWiki {
+class VINWiki
+{
   // Variables
   private $token = null;
   private $person = null;
-  private $endpoints = Array(
+  private $endpoints = [
     "authenticate" => "https://rest.vinwiki.com/auth/authenticate", /* POST */
     "pl82vin" => "https://rest.vinwiki.com/vehicle/plate", /* POST */
     "update_vehicle" => "https://rest.vinwiki.com/vehicle/vin/", /* POST */
@@ -35,8 +57,8 @@ class VINWiki {
     "me" => "https://rest.vinwiki.com/person/notification_count/me", /* GET */
     "person_feed" => "https://rest.vinwiki.com/person/feed/", /* GET */
     "person_profile" => "https://rest.vinwiki.com/person/profile/", /* GET */
-  );
-  private $endpoint_cache = Array();
+  ];
+  private $endpoint_cache = [];
   private const INVALID_TOKEN_NO_SETUP = "Invalid authorization token. Call setup_session first";
   private const VINWIKI_POST_DATE_FORMAT = "Y-m-d\TH:i:s.000\Z";
 
@@ -46,7 +68,7 @@ class VINWiki {
    * @param string $login
    * @param string $password
    * @return bool result
-   * @throws TypeError
+   * @throws \TypeError
    * @throws UnknownHTTPException
    * @throws InvalidHTTPResponseException
    * @throws InvalidVINWikiStatus
@@ -55,14 +77,14 @@ class VINWiki {
    * @author Alec M. <https://amattu.com>
    * @date 2021-04-02T10:31:52-040
    */
-  public function setup_session(string $login, string $password) : bool
+  public function setup_session(string $login, string $password): bool
   {
     // Save Parameters, Setup Session
     $endpoint = $this->endpoints["authenticate"];
-    $post_result = $this->http_post($endpoint, Array(
+    $post_result = $this->http_post($endpoint, [
       "login" => $login,
-      "password" => $password
-    ));
+      "password" => $password,
+    ]);
     $result = null;
 
     // Check HTTP Result
@@ -95,12 +117,12 @@ class VINWiki {
    * @param string license plate
    * @param string U.S. state abbreviation
    * @return array VINWiki decode response
-   * @throws TypeError
+   * @throws \TypeError
    * @throws InvalidVINWikiSession
    * @author Alec M. <https://amattu.com>
    * @date 2021-04-02T11:01:55-040
    */
-  public function pl82vin(string $license_plate, string $state_abbr) : ?array
+  public function pl82vin(string $license_plate, string $state_abbr): ?array
   {
     // Check Parameters
     if (!$this->token) {
@@ -115,10 +137,10 @@ class VINWiki {
 
     // Fetch License Plate
     $endpoint = $this->endpoints["pl82vin"];
-    $post_result = $this->http_post($endpoint, Array(
+    $post_result = $this->http_post($endpoint, [
       "plate" => $license_plate,
-      "state" => $state_abbr
-    ), $this->token);
+      "state" => $state_abbr,
+    ], $this->token);
     $result = null;
 
     // Check HTTP Result
@@ -146,12 +168,12 @@ class VINWiki {
    * @param string $model
    * @param string $trim
    * @return bool status
-   * @throws TypeError
+   * @throws \TypeError
    * @throws InvalidVINWikiSession
    * @author Alec M. <https://amattu.com>
    * @date 2021-04-02T11:42:11-040
    */
-  public function update_vehicle(string $vin, int $year, string $make, string $model, $trim = "") : bool
+  public function update_vehicle(string $vin, int $year, string $make, string $model, $trim = ""): bool
   {
     // Check Parameters
     if (!$this->token) {
@@ -163,12 +185,12 @@ class VINWiki {
 
     // Update Vehicle
     $endpoint = $this->endpoints["update_vehicle"] . $vin;
-    $post_result = $this->http_post($endpoint, Array(
+    $post_result = $this->http_post($endpoint, [
       "year" => $year,
       "make" => $make,
       "model" => $model,
-      "trim" => $trim
-    ), $this->token);
+      "trim" => $trim,
+    ], $this->token);
     $result = null;
 
     // Check HTTP Result
@@ -183,7 +205,6 @@ class VINWiki {
     return true;
   }
 
-
   /**
    * Create a new VINWiki post
    *
@@ -196,12 +217,12 @@ class VINWiki {
    *  string "text"
    * )
    * @return array VINWiki response
-   * @throws TypeError
+   * @throws \TypeError
    * @throws InvalidVINWikiSession
    * @author Alec M. <https://amattu.com>
    * @date 2021-04-02T11:46:39-040
    */
-  public function create_post(string $vin, array $post) : ?array
+  public function create_post(string $vin, array $post): ?array
   {
     // Check Parameters
     if (!$this->token) {
@@ -220,7 +241,7 @@ class VINWiki {
       $post["client"] = "web";
     }
     if (!isset($post["event_date"]) || !($post["event_date"] instanceof \DateTime)) {
-      $post["event_date"] =  date(self::VINWIKI_POST_DATE_FORMAT);
+      $post["event_date"] = date(self::VINWIKI_POST_DATE_FORMAT);
     } else {
       $post["event_date"] = $post["event_date"]->format(self::VINWIKI_POST_DATE_FORMAT);
     }
@@ -250,15 +271,15 @@ class VINWiki {
    *
    * @param string $vin
    * @return ?array feed array
-   * @throws TypeError
+   * @throws \TypeError
    * @author Alec M. <https://amattu.com>
    * @date 2021-03-31T18:19:58-040
    */
-  public function fetch_feed(string $vin) : ?array
+  public function fetch_feed(string $vin): ?array
   {
     // Checks
     if (strlen($vin) != 17) {
-      return Array();
+      return [];
     }
 
     // Variables
@@ -277,7 +298,7 @@ class VINWiki {
    * @author Alec M. <https://amattu.com>
    * @date 2021-04-08T11:11:54-040
    */
-  public function fetch_person_notifications() : ?array
+  public function fetch_person_notifications(): ?array
   {
     // Check Parameters
     if (!$this->token) {
@@ -313,7 +334,7 @@ class VINWiki {
    * @author Alec M. <https://amattu.com>
    * @date 2021-04-08T11:37:33-040
    */
-  public function fetch_person_feed() : ?array
+  public function fetch_person_feed(): ?array
   {
     // Check Parameters
     if (!$this->token) {
@@ -350,14 +371,14 @@ class VINWiki {
    *
    * @param string VINWiki UUID
    * @return ?array profile
-   * @throws TypeError
+   * @throws \TypeError
    * @throws InvalidVINWikiSession
    * @throws InvalidVINWikiPerson
    * @throws InvalidVINwikiUUID
    * @author Alec M. <https://amattu.com>
    * @date 2021-04-08T12:05:59-040
    */
-  public function fetch_person_profile(string $uuid = "") : ?array
+  public function fetch_person_profile(string $uuid = ""): ?array
   {
     // Check Parameters
     if (!$this->token) {
@@ -399,12 +420,12 @@ class VINWiki {
    *
    * @param string VIN / Year / Make / Model
    * @return ?array VINWiki search result
-   * @throws TypeError
+   * @throws \TypeError
    * @throws InvalidVINWikiSession
    * @author Alec M. <https://amattu.com>
    * @date 2021-04-09T10:14:57-040
    */
-  public function vehicle_search(string $query) : ?array
+  public function vehicle_search(string $query): ?array
   {
     // Check Parameters
     if (!$this->token) {
@@ -415,9 +436,9 @@ class VINWiki {
     }
 
     // Query For Vehicles
-    $post_result = $this->http_post($this->endpoints["vehicle_search"], Array(
+    $post_result = $this->http_post($this->endpoints["vehicle_search"], [
       "query" => $query,
-    ), $this->token);
+    ], $this->token);
     $result = null;
 
     // Check HTTP Result
@@ -441,18 +462,18 @@ class VINWiki {
    * @param string url
    * @param array $params
    * @return boolean result status
-   * @throws TypeError
+   * @throws \TypeError
    * @author Alec M. <https://amattu.com>
    * @date 2021-03-31T11:11:18-040
    */
-  private function http_post(string $endpoint, array $fields, $bearer = "") : bool
+  private function http_post(string $endpoint, array $fields, $bearer = ""): bool
   {
     // cURL Initialization
     $handle = curl_init();
     $field_string = "";
     $result = "";
     $error = 0;
-    foreach($fields as $k => $v) { $field_string .= $k ."=". $v . "&"; }
+    foreach ($fields as $k => $v) {$field_string .= $k . "=" . $v . "&";}
     rtrim($field_string, "&");
 
     // Options
@@ -484,11 +505,11 @@ class VINWiki {
    * @param string $endpoint
    * @param string $bearer
    * @return string HTTP result body | null
-   * @throws TypeError
+   * @throws \TypeError
    * @author Alec M. <https://amattu.com>
    * @date 2021-03-31T18:13:00-040
    */
-  private function http_get(string $endpoint, string $bearer = "") : ?string
+  private function http_get(string $endpoint, string $bearer = ""): ?string
   {
     // cURL Initialization
     $handle = curl_init();
@@ -516,4 +537,3 @@ class VINWiki {
     return $result && !$error ? $result : "";
   }
 }
-?>
