@@ -5,7 +5,8 @@
     "license": "AGPL-3.0",
     "autoload": {
         "psr-4": {
-            "amattu2\\": "src/"
+            "amattu2\\": "src/",
+            "amattu2\\VINwiki\\Models\\": "src/models/"
         }
     },
     "authors": [
