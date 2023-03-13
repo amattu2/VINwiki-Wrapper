@@ -22,6 +22,8 @@
 
 namespace amattu2\VINwiki\Models;
 
+use ReflectionClass;
+
 /**
  * A base model for all VINwiki models
  */
@@ -30,24 +32,27 @@ class BaseModel
   /**
    * Construct a new model
    *
-   * @param  array $data
+   * @param array $data
    */
   public function __construct(array $data)
   {
-    $reflection = new \ReflectionClass($this);
+    $reflection = new ReflectionClass($this);
     $base = get_parent_class($this::class);
 
     foreach ($data as $k => $v) {
+      // Check if class property exists
       if ($reflection->hasProperty($k) === false) {
         continue;
       }
 
+      // Check if property is a subclass of BaseModel and create a new instance
       $type = $reflection->getProperty($k)->getType()->getName();
       if (class_exists($type) && is_subclass_of($type, $base)) {
         $this->$k = new $type($v);
         continue;
       }
 
+      // Otherwise, just set the property
       $this->$k = $v;
     }
   }
@@ -55,7 +60,7 @@ class BaseModel
   /**
    * Get model property
    *
-   * @param  string $name
+   * @param string $name
    * @return mixed value
    */
   public function __get(string $name): mixed

@@ -25,63 +25,72 @@ require "vendor/autoload.php";
 
 // Instantiate a new wrapper
 $dotenv = parse_ini_file(".env");
-$wrapper = new amattu2\VINwiki($dotenv['username'], $dotenv['password']);
+$wrapper = new amattu2\VINwiki\Client($dotenv['username'], $dotenv['password']);
 
 echo "<h1>Logged in person is</h1>", "<pre>";
-print_r($wrapper->getPerson());
+print_r($wrapper->getPersonProfile());
 echo "</pre>";
 
-// Fetch a vehicle by VIN
-// echo "<h1>Fetch Vehicle By VIN</h1>", "<pre>";
-// print_r($wrapper->fetch_vehicle("WBAPL33579A406957"));
+// echo "<h1>Update person</h1>", "<pre>";
+// $currentPerson = $wrapper->getPersonProfile();
+// $person = new amattu2\VINwiki\Models\Person([
+//   "email" => "email@address.com",
+//   "bio" => "This is a test bio from the VINWiki-Wrapper PHP library.",
+// ]);
+// print_r($wrapper->updatePersonProfile($currentPerson->uuid, $person));
 // echo "</pre>";
-
-
-// Fetch a vehicle feed by VIN
-// echo "<h1>Fetch Feed By VIN</h1>", "<pre>";
-// print_r($wrapper->fetch_feed("WBAPL33579A406957"));
-// echo "</pre>";
-
-
-// Fetch vehicle decode by license plate (pl82vin)
-// echo "<h1>Plate 2 VIN Decode</h1>", "<pre>";
-// print_r($wrapper->plate_lookup("ABC123", "US", "MD"));
-// echo "</pre>";
-
-
-// Update Vehicle By VIN
-// echo "<h1>Update Vehicle</h1>", "<pre>";
-// print_r($wrapper->update_vehicle("WBAPL33579A406957", 2009, "BMW", "335i", "xDrive"));
-// echo "</pre>";
-
 
 // Fetch a user VINWiki notification feed
 // echo "<h1>Notifications</h1>", "<pre>";
-// print_r($wrapper->fetch_person_notifications());
-// echo "</pre>";
-
-
-// Perform vehicle search by query
-// echo "<h1>Vehicle Search Query</h1>", "<pre>";
-// print_r($wrapper->vehicle_search("2009 BMW 335i"));
+// print_r($wrapper->getPersonNotifications());
 // echo "</pre>";
 
 
 // Fetch a user VINWiki feed
 // echo "<h1>User (Self) Feed</h1>", "<pre>";
-// print_r($wrapper->fetch_person_feed());
-// echo "</pre>";
-
-
-// Fetch a VINWiki user profile
-// echo "<h1>User Profile</h1>", "<pre>";
-// print_r($wrapper->fetch_person_profile());
+// print_r($wrapper->getPersonFeed());
 // echo "</pre>";
 
 
 // Fetch a VINwiki person's posts
 // echo "<h1>User Posts</h1>", "<pre>";
-// print_r($wrapper->fetch_person_posts(""));
+// print_r($wrapper->getPersonPosts());
+// echo "</pre>";
+
+
+// Fetch a list of recent VINs the user has posted on
+// echo "<h1>User Recent VINs</h1>", "<pre>";
+// print_r($wrapper->getRecentVins());
+// echo "</pre>";
+
+
+// Fetch vehicle decode by license plate (pl82vin)
+// echo "<h1>Plate to Vehicle</h1>", "<pre>";
+// print_r($wrapper->plateLookup("HELLO", "US", "CA"));
+// echo "</pre>";
+
+
+// Fetch a vehicle feed by VIN
+// echo "<h1>Fetch Feed By VIN</h1>", "<pre>";
+// print_r($wrapper->getFeed("WBAPL33579A406957"));
+// echo "</pre>";
+
+
+// Fetch a vehicle by VIN
+// echo "<h1>Fetch Vehicle By VIN</h1>", "<pre>";
+// print_r($wrapper->getVehicle("WBAPL33579A406957"));
+// echo "</pre>";
+
+
+// Perform vehicle search by query
+// echo "<h1>Vehicle Search Query</h1>", "<pre>";
+// print_r($wrapper->vehicleSearch("2011 Toyota Corolla"));
+// echo "</pre>";
+
+
+// Update Vehicle By VIN
+// echo "<h1>Update Vehicle</h1>", "<pre>";
+// print_r($wrapper->updateVehicle("WBAPL33579A406957", 2009, "BMW", "335i", "xDrive"));
 // echo "</pre>";
 
 
@@ -91,5 +100,9 @@ echo "</pre>";
 //   "mileage" => 43000,
 //   "text" => "This is a test post from the VINWiki-Wrapper PHP library.",
 // ]);
-// print_r($wrapper->create_post("WBAPL33579A406957", $post));
+// print_r($wrapper->createPost("WBAPL33579A406957", $post));
 // echo "</pre>";
+
+
+// Delete a post by UUID
+// print_r($wrapper->deletePost("f3b5b2b0-1b5a-11e9-9c4b-0b3b2b0b3b2b"));
