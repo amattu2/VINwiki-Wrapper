@@ -22,12 +22,10 @@
 
 namespace amattu2\VINwiki\Models;
 
-use JsonSerializable;
-
 /**
  * A VINwiki Person
  */
-class Person extends BaseModel implements JsonSerializable
+class Person extends BaseModel
 {
   protected mixed $avatar;
   protected string $bio = "";
@@ -54,20 +52,5 @@ class Person extends BaseModel implements JsonSerializable
   public function __construct(array $data)
   {
     parent::__construct($data);
-  }
-
-  public function jsonSerialize() : array
-  {
-    return [
-      "display_name" => $this->display_name,
-      "email" => $this->email,
-      "location" => $this->location,
-      "bio" => $this->bio,
-      "website_url" => $this->website_url,
-      "social_facebook" => $this->social_facebook,
-      "social_instagram" => $this->social_instagram,
-      "social_linkedin" => $this->social_linkedin,
-      "social_twitter" => $this->social_twitter,
-    ];
   }
 }

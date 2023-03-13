@@ -23,11 +23,12 @@
 namespace amattu2\VINwiki\Models;
 
 use ReflectionClass;
+use JsonSerializable;
 
 /**
  * A base model for all VINwiki models
  */
-class BaseModel
+class BaseModel implements JsonSerializable
 {
   /**
    * Construct a new model
@@ -82,4 +83,27 @@ class BaseModel
 
     return true;
   }
+
+  /**
+   * Provide a JSON representation of the model
+   *
+   * @return array
+   */
+	public function jsonSerialize(): array
+  {
+    $data = [];
+    $reflection = new ReflectionClass($this);
+
+    foreach ($reflection->getProperties() as $property) {
+      $key = $property->getName();
+
+      if (!$property->isInitialized($this)) {
+        continue;
+      }
+
+      $data[$key] = $this->$key;
+    }
+
+    return $data;
+	}
 }
