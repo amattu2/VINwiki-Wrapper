@@ -24,6 +24,7 @@ namespace amattu2\VINwiki\Models;
 
 use JsonSerializable;
 use DateTime;
+
 /**
  * A VINwiki Vehicle Post Model
  *

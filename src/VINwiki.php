@@ -26,15 +26,11 @@ namespace amattu2;
 use TypeError;
 
 // Exception Classes
-class UnknownHTTPException extends \Exception
-{}
 class InvalidHTTPResponseException extends \Exception
 {}
 class InvalidVINWikiStatus extends \Exception
 {}
 class InvalidVINWikiToken extends \Exception
-{}
-class InvalidVINWikiSession extends \Exception
 {}
 class InvalidVINWikiPerson extends \Exception
 {}
@@ -79,7 +75,7 @@ class VINwiki
     "update_vehicle" => self::BASE_URL . "vehicle/vin/",
     "vehicle_post" =>   self::BASE_URL . "vehicle/post/",
     "vehicle_search" => self::BASE_URL . "vehicle/search",
-    "post_delete" =>    self::BASE_URL . "post/delete/", // TODO
+    "post_delete" =>    self::BASE_URL . "post/delete", // TODO
 
     /* GET */
     "vehicle" =>        self::BASE_URL . "vehicle/vin/",
@@ -88,7 +84,7 @@ class VINwiki
     "person_feed" =>    self::BASE_URL . "person/feed/",
     "person_profile" => self::BASE_URL . "person/profile/",
     "person_posts" =>   self::BASE_URL . "person/posts/",
-    "recent_vins" =>    self::BASE_URL . "person/recent_vins", // TODO
+    "recent_vins" =>    self::BASE_URL . "person/recent_vins",
   ];
 
   /**
@@ -140,7 +136,6 @@ class VINwiki
    * @param string state/region abbreviation
    * @return ?VINwiki\Models\PlateLookup
    * @throws TypeError
-   * @throws InvalidVINWikiSession
    */
   public function plate_lookup(string $license_plate, string $country, string $state_abbr): ?VINwiki\Models\PlateLookup
   {
@@ -220,9 +215,8 @@ class VINwiki
    *
    * @param string $vin the vehicle to post to
    * @param VINwiki\Models\VehiclePost $post the post to create
-   * @return ?VINwiki\Models\FeedPost VINWiki post response
+   * @return ?VINwiki\Models\FeedPost VINWiki post response or null on failure
    * @throws TypeError
-   * @throws InvalidVINWikiSession
    */
   public function create_post(string $vin, VINwiki\Models\VehiclePost $post): ?VINwiki\Models\FeedPost
   {
@@ -235,10 +229,7 @@ class VINwiki
     if (!($result = json_decode($post_result, true))) {
       return null;
     }
-    if ($result["status"] !== "ok") {
-      return null;
-    }
-    if (!isset($result["post"])) {
+    if ($result["status"] !== "ok" || !isset($result["post"])) {
       return null;
     }
 
@@ -279,7 +270,6 @@ class VINwiki
    * Fetch a user notification feed
    *
    * @return ?array VINWiki notification result
-   * @throws InvalidVINWikiSession
    */
   public function fetch_person_notifications(): ?array
   {
@@ -307,7 +297,6 @@ class VINwiki
    *
    * @param string $uuid the UUID of the person to fetch
    * @return ?VINwiki\Models\PersonFeed VINWiki feed
-   * @throws InvalidVINWikiSession
    * @throws InvalidVINWikiPerson
    * @throws InvalidVINwikiUUID
    */
@@ -351,7 +340,6 @@ class VINwiki
    * @param string UUID of the person to fetch
    * @return ?VINwiki\Models\Person profile
    * @throws TypeError
-   * @throws InvalidVINWikiSession
    * @throws InvalidVINWikiPerson
    * @throws InvalidVINwikiUUID
    */
@@ -386,6 +374,13 @@ class VINwiki
     return new VINwiki\Models\Person($result["profile"]);
   }
 
+  /**
+   * Fetch a VINWiki person posts by UUID
+   *
+   * @param  string $uuid UUID of the person to fetch
+   * @return VINwiki\Models\PersonPosts|null
+   * @throws TypeError
+   */
   public function fetch_person_posts(string $uuid = ""): ?VINwiki\Models\PersonPosts
   {
     // Check Parameters
@@ -474,5 +469,27 @@ class VINwiki
     }
 
     return new VINwiki\Models\Vehicle($result["vehicle"]);
+  }
+
+  /**
+   * Fetch a list of vehicles the user has recently interacted with
+   *
+   * @return ?VINwiki\Models\RecentVins
+   */
+  public function fetch_recent_vins(): ?VINwiki\Models\RecentVins
+  {
+    // Query For Vehicles
+    $get_result = Utils::Get($this->endpoints["recent_vins"], $this->token);
+    $result = null;
+
+    // Check HTTP Result
+    if (!$get_result || !($result = json_decode($get_result, true))) {
+      return null;
+    }
+    if ($result["status"] !== "ok" || !isset($result["recent_vins"])) {
+      return null;
+    }
+
+    return new VINwiki\Models\RecentVins($result);
   }
 }
