@@ -1,449 +1,218 @@
 # Introduction
 
-This is a PHP-7 VinWiki.com API endpoint wrapper. Take a look at the index files or Usage section below.
+This is an unofficial [VINwiki.com](https://vinwiki.com) API wrapper for PHP. It offers a simple interface
+for interacting with the VINwiki API. Among other things, it allows you to:
+
+- Read and update user profiles
+- Read and update vehicle information
+- Read, create, and delete posts
+- Decode license plates by country and state
+- Search for vehicles by VIN, Year, Make, Model, or free-text
 
 # Usage
 
-Install via `composer require amattu2/vinwiki-wrapper`
+## Installation
 
-### Setup a class instance
+Via Composer
 
-```PHP
-// Require file
-require("src/VINWiki.php");
-
-// Spawn instance
-$wrapper = new amattu2\VINWiki();
+```bash
+composer require amattu2/vinwiki-wrapper
 ```
 
-### Fetch a API token
+Then, require Composer's autoloader:
 
-PHPDoc
-
-```PHP
-/**
- * Setup a VINWiki Session
- *
- * @param string $login
- * @param string $password
- * @return bool result
- * @throws TypeError
- * @throws UnknownHTTPException
- * @throws InvalidHTTPResponseException
- * @throws InvalidVINWikiStatus
- * @throws InvalidVINWikiToken
- * @throws InvalidVINWikiPerson
- * @author Alec M. <https://amattu.com>
- * @date 2021-04-02T10:31:52-040
- */
-public function setup_session(string $login, string $password) : bool
+```php
+require 'vendor/autoload.php';
 ```
 
-Usage
+Instantiate the class:
 
-```PHP
-$wrapper->setup_session("email|username", "password")
+```php
+$wrapper = new amattu2\VINwiki\Client("email|username", "password");
 ```
 
-Only needed if you use:
+## Functions
 
-- pl82vin
-- update_vehicle
-- create_post
+### People
 
-### Fetch a vehicle feed
+These functions relate to person interactions.
 
-PHPDoc
+<details>
+  <summary>getPersonProfile(string $uuid = "") : ?VINwiki\Models\Person</summary>
 
-```PHP
-/**
- * Fetch Vehicle Feed By VIN
- *
- * @param string $vin
- * @return array feed array
- * @throws TypeError
- * @author Alec M. <https://amattu.com>
- * @date 2021-03-31T18:19:58-040
- */
-public function fetch_feed(string $vin) : array
-```
+  Returns a VINwiki user profile. If no user is specified,
+  the current user's profile is returned.
 
-Usage
+  ```php
+  // for the current user
+  print_r($wrapper->getPersonProfile());
 
-```PHP
-$wrapper->fetch_feed("VIN_NUMBER")
-```
+  // or for a specific user
+  print_r($wrapper->getPersonProfile("61382da4-25c6-494f-8065-87afdfb4f50d"));
+  ```
 
-### Decode a license plate
+</details>
 
-PHPDoc
+<details>
+  <summary>updatePersonProfile(string $uuid, VINwiki\Models\Person $person): ?VINwiki\Models\Person</summary>
 
-```PHP
-/**
- * Fetch a VIN from a license plate
- *
- * @see setup_session
- * @param string license plate
- * @param string U.S. state abbreviation
- * @return array VINWiki decode response
- * @throws TypeError
- * @throws InvalidVINWikiSession
- * @author Alec M. <https://amattu.com>
- * @date 2021-04-02T11:01:55-040
- */
-public function pl82vin(string $license_plate, string $state_abbr) : ?array
-```
+  Updates the current user's profile. Returns the updated profile on success. The only required field is "email".
 
-Usage
+  See [Models\Person](src/models/Person.php) for more fields.
 
-```PHP
-$wrapper->pl82vin("PLATE_NO", "STATE")
-```
+  ```php
+  $person = new amattu2\VINwiki\Models\Person([
+    "email" => "abc123@example.com",
+  ]);
+  print_r($wrapper->updatePersonProfile("{UUID GOES HERE}", $person));
+  ```
 
-Success return result
+</details>
 
-```
-Array
-(
-    [vin] =>
-    [description] =>
-    [year] =>
-    [make] =>
-    [model] =>
-)
-```
+<details>
+  <summary>getPersonNotifications() : ?array</summary>
 
-### Update a vehicle
+  Get the current user's notifications.
 
-PHPDoc
+  ```php
+  print_r($wrapper->getPersonNotifications());
+  ```
 
-```PHP
-/**
- * Update a vehicle by VIN
- *
- * @see setup_session
- * @param string $vin
- * @param int $year
- * @param string $make
- * @param string $model
- * @param string $trim
- * @return bool status
- * @throws TypeError
- * @throws InvalidVINWikiSession
- * @author Alec M. <https://amattu.com>
- * @date 2021-04-02T11:42:11-040
- */
-public function update_vehicle(string $vin, int $year, string $make, string $model, $trim = "") : bool
-```
+</details>
 
-Usage
+<details>
+  <summary>getPersonFeed(string $uuid = "") : ?VINwiki\Models\PersonFeed</summary>
 
-```PHP
-$wrapper->update_vehicle("VIN", "YEAR", "MAKE", "MODEL", "TRIM")
-```
+  Get a user's post feed. If no user is specified, the current user's feed is returned.
 
-Success return result
+  ```php
+  // for the current user
+  print_r($wrapper->getPersonFeed());
 
-```
-true
-```
+  // or for a specific user
+  print_r($wrapper->getPersonFeed("61382da4-25c6-494f-8065-87afdfb4f50d"));
+  ```
 
-### Create a post
+</details>
 
-PHPDoc
+<details>
+  <summary>getPersonPosts(string $uuid = ""): ?VINwiki\Models\PersonPosts</summary>
 
-```PHP
-/**
- * Create a new VINWiki post
- *
- * @param string $vin
- * @param array Array(
- *  string ?"class_name",
- *  string ?"client",
- *  DateTime ?"event_date",
- *  int ?"mileage",
- *  string "text"
- * )
- * @return array VINWiki response
- * @throws TypeError
- * @throws InvalidVINWikiSession
- * @author Alec M. <https://amattu.com>
- * @date 2021-04-02T11:46:39-040
- */
-public function create_post(string $vin, array $post) : ?array
-```
+  Get a user's posts. If no user is specified, the current user's posts are returned.
 
-Usage
+  ```php
+  // for the current user
+  print_r($wrapper->getPersonPosts());
 
-```PHP
-$wrapper->create_post("VIN", Array("text" => "added to vinwiki via API"))
-```
+  // or for a specific user
+  print_r($wrapper->getPersonPosts("61382da4-25c6-494f-8065-87afdfb4f50d"));
+  ```
 
-Success return result
+</details>
 
-```
-Array
-(
-    [uuid] =>
-    [id] =>
-    [type] =>
-    [client] =>
-    [dest_url] =>
-    [subject_uuid] =>
-    [data] =>
-    [post_text] =>
-    [comment_count] =>
-    [locale] =>
-    [post_time] =>
-    [post_date] =>
-    [post_date_ago] =>
-    [event_time] =>
-    [event_date] =>
-    [person] => Array
-        (
-            [id] =>
-            [uuid] =>
-            [short_url] =>
-            [username] =>
-            [avatar] =>
-        )
-    [vehicle] => Array
-        (
-            [vin] =>
-            [id] =>
-            [make] =>
-            [model] =>
-            [year] =>
-            [trim] =>
-            [long_name] =>
-            [follower_count] =>
-            [post_count] =>
-        )
-    [image] => Array
-        (
-        )
+<details>
+  <summary>getRecentVins(): ?VINwiki\Models\RecentVins</summary>
 
-)
-```
+  Returns a list of vehicles the user has recently posted on or interacted with.
+  Does not include vehicles that the user has only viewed.
 
-### Fetch Notifications
+  ```php
+  print_r($wrapper->getRecentVins());
+  ```
 
-PHPDoc
+</details>
 
-```PHP
-/**
- * Fetch a user notification feed
- *
- * @return ?array VINWiki notification result
- * @throws InvalidVINWikiSession
- * @author Alec M. <https://amattu.com>
- * @date 2021-04-08T11:11:54-040
- */
-public function fetch_person_notifications() : ?array
-```
+### Vehicles
 
-Usage
+These functions handle any vehicle-related interactions.
 
-```PHP
-$wrapper->fetch_person_notifications()
-```
+<details>
+  <summary>plateLookup(string $plate, string $country, string $state): ?VINwiki\Models\PlateLookup</summary>
 
-Success return result
+  Returns a vehicle decoded by the license plate. Currently supports US/UK plates.
 
-```
-Array
-(
-  [unseen] =>
-)
-```
+  ```php
+  print_r($wrapper->plateLookup("HELLO", "US", "CA"));
+  ```
 
-### Fetch A Person's Feed
+</details>
 
-PHPDoc
+<details>
+  <summary>getFeed(string $vin): ?VINwiki\Models\VehicleFeed</summary>
 
-```PHP
-/**
- * Fetch a VINWiki person feed
- *
- * @return ?array VINWiki feed
- * @throws InvalidVINWikiSession
- * @throws InvalidVINWikiPerson
- * @throws InvalidVINwikiUUID
- * @author Alec M. <https://amattu.com>
- * @date 2021-04-08T11:37:33-040
- */
-public function fetch_person_feed() : ?array
-```
+  Get a vehicle's post feed (i.e. when you visit a vehicle's page on VINwiki.com)
 
-Usage
+  ```php
+  print_r($wrapper->getFeed("WBAPL33579A406957"));
+  ```
 
-```PHP
-$wrapper->fetch_person_feed();
-```
+</details>
 
-Success return result
+<details>
+  <summary>getVehicle(string $vin): ?VINwiki\Models\Vehicle</summary>
 
-```
-Array
-(
-  [0] => Array
-  (
-    [post] => Array
-    (
-      [uuid] =>
-      [id] =>
-      [type] => photo|generic
-      [client] => ios|web|android
-      [dest_url] =>
-      [subject_uuid] =>
-      [data] =>
-      [post_text] =>
-      [comment_count] =>
-      [locale] =>
-      [post_time] =>
-      [post_date] =>
-      [post_date_ago] =>
-      [event_time] =>
-      [event_date] =>
-      [person] => Array
-      (
-          [id] =>
-          [uuid] =>
-          [short_url] =>
-          [username] =>
-          [avatar] =>
-      )
-      [vehicle] => Array
-      (
-          [vin] =>
-          [id] =>
-          [make] =>
-          [model] =>
-          [year] =>
-          [trim] =>
-          [long_name] =>
-          [follower_count] =>
-          [post_count] =>
-      )
-      [image] => Array
-      (
-          [id] =>
-          [uuid] =>
-          [thumbnail] =>
-          [poster] =>
-          [large] =>
-      )
-    )
-  )
-  ...
-)
-```
+  Get a vehicle's information by VIN.
 
-### Fetch A Person's Profile
+  ```php
+  print_r($wrapper->getVehicle("WBAPL33579A406957"));
+  ```
 
-PHPDoc
+</details>
 
-```PHP
-/**
- * Fetch a VINWiki person profile
- *
- * @param string VINWiki UUID
- * @return ?array profile
- * @throws TypeError
- * @throws InvalidVINWikiSession
- * @throws InvalidVINWikiPerson
- * @throws InvalidVINwikiUUID
- * @author Alec M. <https://amattu.com>
- * @date 2021-04-08T12:05:59-040
- */
-public function fetch_person_profile(string $uuid = "") : ?array
-```
+<details>
+  <summary>vehicleSearch(string $query): ?VINwiki\Models\VehicleSearch</summary>
 
-Usage
+  Perform a free-text search for vehicles by Year, Make, Model, or VIN.
 
-```PHP
-$wrapper->fetch_person_profile("UUID")
-```
+  ```php
+  print_r($wrapper->vehicleSearch("2011 Toyota Corolla"));
+  ```
 
-The `UUID` argument is optional, with the default being the authenticated user's profile
+</details>
 
-Success return result
+<details>
+  <summary>updateVehicle(string $vin, int $year, string $make, string $model, string $trim = ""): bool</summary>
 
-```
-Array
-(
-  [uuid] =>
-  [username] =>
-  [first_name] =>
-  [last_name] =>
-  [profile] =>
-  [profile_picture_uuid] =>
-  [following_vehicle_count] =>
-  [follower_count] =>
-  [following_count] =>
-  [post_count] =>
-  [avatar] =>
-  [website_url] =>
-  [bio] =>
-  [full_name] =>
-  [location] =>
-  [display_name] =>
-  [social_facebook] =>
-  [social_instagram] =>
-  [social_twitter] =>
-  [social_linkedin] =>
-  [email] =>
-)
-```
+  Update a vehicle's Year, Make, Model, and Trim by VIN. Returns true if successful.
 
-### Search for vehicles
+  ```php
+  print_r($wrapper->updateVehicle("WBAPL33579A406957", 2009, "BMW", "335i", "xDrive"));
+  ```
 
-PHPDoc
+</details>
 
-```PHP
-/**
- * Search for vehicles
- *
- * @param string VIN / Year / Make / Model
- * @return ?array VINWiki search result
- * @throws TypeError
- * @throws InvalidVINWikiSession
- * @author Alec M. <https://amattu.com>
- * @date 2021-04-09T10:14:57-040
- */
-public function vehicle_search(string $query) : ?array
-```
+<details>
+  <summary>createPost(string $vin, VINwiki\Models\VehiclePost $post): ?VINwiki\Models\FeedPost</summary>
 
-Usage
+  Create a new post on a vehicle. Requires a VIN and a VehiclePost object. Returns the new post on success.
 
-```PHP
-$wrapper->vehicle_search("2009 BMW 335i");
-```
+  See [Models\VehiclePost](src/models/VehiclePost.php) for more information.
 
-Success return result
+  ```php
+  // Create a new post class
+  $post = new amattu2\VINwiki\Models\VehiclePost([
+    "mileage" => 43000,
+    "text" => "This is a test post from the VINwiki-Wrapper PHP library.",
+  ]);
 
-```
-Array
-(
-  [vehicles] => Array
-  (
-    [0] => Array
-    (
-        [vin] =>
-        [make] =>
-        [model] =>
-        [year] =>
-        [trim] =>
-        [long_name] =>
-        [icon_photo] =>
-    )
-    ...
-  )
-  [term] => string
-  [count] => int
-)
-```
+  // Post it
+  print_r($wrapper->createPost("WBAPL33579A406957", $post));
+  ```
 
-# Requirements & Dependencies
+</details>
 
-PHP 7.0+
+<details>
+  <summary>deletePost(string $uuid) : bool</summary>
+
+  Delete a post by UUID. Returns true if successful. Requires the user to be the author of the post.
+
+  ```php
+  print_r($wrapper->deletePost("61382da4-25c6-494f-8065-87afdfb4f50d"));
+  ```
+
+</details>
+
+# Requirements
+
+- PHP 7.4+
+- Composer (Preferred)
