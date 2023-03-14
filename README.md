@@ -81,16 +81,16 @@ These functions relate to person interactions.
 </details>
 
 <details>
-  <summary>getPersonFeed(string $uuid = "") : ?VINwiki\Models\PersonFeed</summary>
+  <summary>getPersonFeed(string $uuid = "", bool $filterFollowing = true): ?Models\PersonFeed</summary>
 
-  Get a user's post feed. If no user is specified, the current user's feed is returned.
+  Get a user's post feed. If no `$uuid` is specified, the current user's feed is returned. If `$filterFollowing` is true, only the posts for vehicles/people that the specified user is following will be returned.
 
   ```php
   // for the current user
   print_r($wrapper->getPersonFeed());
 
   // or for a specific user
-  print_r($wrapper->getPersonFeed("61382da4-25c6-494f-8065-87afdfb4f50d"));
+  print_r($wrapper->getPersonFeed("61382da4-25c6-494f-8065-87afdfb4f50d", false));
   ```
 
 </details>

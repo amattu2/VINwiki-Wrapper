@@ -84,6 +84,7 @@ class Client
     "feed" => self::BASE_URL . "vehicle/feed/",
     "me" => self::BASE_URL . "person/notification_count/me",
     "person_feed" => self::BASE_URL . "person/feed/",
+    "person_feed_filtered" => self::BASE_URL . "person/filtered_feed/",
     "person_profile" => self::BASE_URL . "person/profile/",
     "person_posts" => self::BASE_URL . "person/posts/",
     "recent_vins" => self::BASE_URL . "person/recent_vins",
@@ -212,11 +213,12 @@ class Client
    * If no UUID is provided, the user's feed will be returned
    *
    * @param string $uuid the UUID of the person to fetch
+   * @param bool $filterFollowing filter posts to people/vehicles the user is following
    * @return ?Models\PersonFeed VINwiki feed
    * @throws InvalidVINwikiPerson
    * @throws InvalidVINwikiUUID
    */
-  public function getPersonFeed(string $uuid = ""): ?Models\PersonFeed
+  public function getPersonFeed(string $uuid = "", bool $filterFollowing = true): ?Models\PersonFeed
   {
     // Check Parameters
     if (empty($uuid)) {
@@ -232,7 +234,9 @@ class Client
     }
 
     // Fetch Feed
-    $get_result = Utils::Get($this->endpoints["person_feed"] . $uuid, $this->token);
+    $get_result = Utils::Get(
+      ($filterFollowing ? $this->endpoints["person_feed_filtered"] : $this->endpoints["person_feed"]) . $uuid,
+      $this->token);
     $result = null;
 
     // Check HTTP Result
