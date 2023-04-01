@@ -28,7 +28,7 @@ namespace amattu2\VINwiki\Models;
 class Person extends BaseModel
 {
   protected mixed $avatar;
-  protected string $bio = "";
+  protected ?string $bio = "";
   protected ?string $display_name = "";
   protected ?string $email;
   protected ?string $first_name;
