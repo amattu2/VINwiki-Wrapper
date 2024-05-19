@@ -32,16 +32,16 @@ class Vehicle extends BaseModel
   protected ?int $follower_count;
   protected ?string $icon_photo;
   protected ?int $id;
-  protected string $long_name;
-  protected string $make;
-  protected string $model;
+  protected ?string $long_name;
+  protected ?string $make;
+  protected ?string $model;
   protected ?bool $ownership;
   protected ?int $post_count;
   protected ?string $poster_photo;
   protected ?string $trim;
   protected ?string $updated;
   protected ?bool $user_updated;
-  protected string $year;
+  protected ?string $year;
   protected string $vin;
 
   public function __construct(array $data)
