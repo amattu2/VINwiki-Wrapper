@@ -34,6 +34,7 @@ class FeedPost extends BaseModel
   protected string $event_date;
   protected string $event_time;
   protected int $id;
+  protected ?int $mileage;
   protected PostImage $image;
   protected mixed $locale;
   protected Person $person;
