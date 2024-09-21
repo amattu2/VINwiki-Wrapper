@@ -2,7 +2,7 @@
     "name": "amattu2/vinwiki-wrapper",
     "description": "A VINwiki.com API wrapper. Opens up access to VINWiki API functionality; Fetch feeds by a VIN, use plate2vin (pl82vin), add a new event to a feed, etc.",
     "type": "library",
-    "license": "AGPL-3.0",
+    "license": "AGPL-3.0-only",
     "autoload": {
         "psr-4": {
             "amattu2\\VINwiki\\": "src/"
@@ -14,5 +14,8 @@
             "email": "alecmattu1234@gmail.com"
         }
     ],
-    "require": {}
+    "require": {
+        "php": ">=7.4",
+        "ext-curl": "*"
+    }
 }

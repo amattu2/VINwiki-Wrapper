@@ -1,7 +1,8 @@
 # Introduction
 
-This is an unofficial [VINwiki.com](https://vinwiki.com) API wrapper for PHP. It offers a simple interface
-for interacting with the VINwiki API. Among other things, it allows you to:
+This is an unofficial and dependency-free [VINwiki.com](https://vinwiki.com) API
+wrapper written PHP. It offers a simple interface for interacting with the
+VINwiki API. Among other things, it allows you to:
 
 - Read and update user profiles
 - Read and update vehicle information
@@ -215,4 +216,5 @@ These functions handle any vehicle-related interactions.
 # Requirements
 
 - PHP 7.4+
+- cURL
 - Composer (Preferred)
